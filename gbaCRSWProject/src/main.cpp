@@ -4,6 +4,9 @@
 #include <stdint.h>
 #include "gba.h"
 
+#define SIDEBAR_WIDTH 60
+#define MAP_SEPERATOR 100
+
 //================
 //   Function: main()
 //      Notes: Main entry point into rom
@@ -14,7 +17,8 @@ enum color
 	SAND_COLOR = 0,
 	CURSOR_INNER_COLOR,
 	CURSOR_OUTER_COLOR,
-	MENU_MAIN_COLOR
+	MENU_MAIN_COLOR,
+	MENU_BCKGR_COLOR
 };
 
 void paintGround();						// [TODO: Refer to exhibit a about painting sand texture]
@@ -23,11 +27,11 @@ void moveCursor(int&,int&);				// Move cursor at x,y with end-of-screen check
 void drawCursor(int,int);				// Draw cursor at x,y
 bool manageWallHit(int&,int&);			// Manages wall hits and returns true if a hit has been detected
 
-void drawRightMenu();
+void drawSidebar();
 
-void drawRightMenuSeperator();					// Draws right-hand menu
-void drawMapSeperator();						// Draws map seperator in right-hand menu
-
+void drawMenu();
+void drawMap();
+	
 int main()
 {
 	//REG_DISPCNT (defined in gba.h) is the main display register that controls
@@ -41,6 +45,7 @@ int main()
 	SetPaletteBG(CURSOR_INNER_COLOR, RGB(31,31,31));
 	SetPaletteBG(CURSOR_OUTER_COLOR, RGB(0,0,0));
 	SetPaletteBG(MENU_MAIN_COLOR, RGB(5,9,22));
+	SetPaletteBG(MENU_BCKGR_COLOR, RGB(25,26,20));
 		
 	drawCursor(10,10);
 	
@@ -54,7 +59,7 @@ int main()
 		
 		ClearScreen8(SAND_COLOR);
 	
-		drawRightMenu();
+		drawSidebar();
 	
 		moveCursor(cursorXLocation,cursorYLocation);
 		
@@ -63,39 +68,29 @@ int main()
 			cursorXLocation++;
 		*/
 		
-//		WaitVSync();
+		//WaitVSync();
 	}
 
 	return 0;
 }
 
-// This draws the right menu
-// [TOOD: Spiral]
-void drawRightMenuSeperator()
+void drawSidebar()
 {
-	for(int line = 0;line<SCREEN_HEIGHT;line++)
+	for(int line = 0;line<SCREEN_HEIGHT;line++)	// Traverse each line
 	{
-		for(int column=0;column<6;column++)
-			PlotPixel8(column+SCREEN_WIDTH*3/4,line,MENU_MAIN_COLOR);	//[TODO:Color should be team color]
+		// [TODO: SCREEN_WDITH-SIDEBAR_WIDTH - eh? maybe #define this?
+		for(int column = SCREEN_WIDTH-SIDEBAR_WIDTH;column<SCREEN_WIDTH;column++)
+		{
+			if((column<SCREEN_WIDTH-SIDEBAR_WIDTH+6)||((line>MAP_SEPERATOR) && (line<MAP_SEPERATOR+5)))
+				PlotPixel8(column,line,MENU_MAIN_COLOR);				
+		
+		/*
+			if((column<6) || (line>SCREEN_HEIGHT*2/3 && line<5+SCREEN_HEIGHT*2/3))
+			else
+				PlotPixel8(column+SCREEN_WIDTH*3/4,line,MENU_BCKGR_COLOR);
+		*/
+		}	
 	}
-
-}
-
-// This seperates the 'map'
-// [TODO: Spiral]
-void drawMapSeperator()
-{
-	for(int line = 0; line<5;line++)
-	{
-		for(int column=SCREEN_WIDTH*3/4;column<SCREEN_WIDTH;column++)
-			PlotPixel8(column,line+SCREEN_HEIGHT*2/3,MENU_MAIN_COLOR);
-	}
-}
-
-void drawRightMenu()
-{
-	drawRightMenuSeperator();
-	drawMapSeperator();
 }
 
 bool manageWallHit(int& x,int& y)
@@ -124,24 +119,27 @@ bool manageWallHit(int& x,int& y)
 		hasHitWall = true;
 	}
 	
-	drawCursor(x,y);
+	
 	return hasHitWall;
 }
 
 void moveCursor(int &_x,int &_y)
 {
 	if(manageWallHit(_x,_y))
+	{	
+		drawCursor(_x,_y);
 		return;
+	}
 		
 	if((REG_P1 & KEY_RIGHT)==0)
-		_x++;	
+		_x+=2;	
 	else if((REG_P1 & KEY_LEFT)==0)
-		_x--;
+		_x-=2;
 		
 	if((REG_P1 & KEY_UP)==0)
-		_y--;	
+		_y-=2;	
 	else if((REG_P1 & KEY_DOWN)==0)
-		_y++;	
+		_y+=2;	
 	
 	drawCursor(_x,_y);
 }
