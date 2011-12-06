@@ -5,7 +5,8 @@
 #include "gba.h"
 
 #define SIDEBAR_WIDTH 60
-#define MAP_SEPERATOR 100
+#define SIDEBAR_TOP 75
+#define SIDEBAR_BOTTOM 100
 #define SIDEBAR_START SCREEN_WIDTH-SIDEBAR_WIDTH
 
 //================
@@ -28,10 +29,10 @@ void moveCursor(int&,int&);				// Move cursor at x,y with end-of-screen check
 void drawCursor(int,int);				// Draw cursor at x,y
 bool manageWallHit(int&,int&);			// Manages wall hits and returns true if a hit has been detected
 
-void drawSidebar();
+void drawRightMenu();
 
-void drawMenu();
-void drawMap();
+void drawRightMenuSeperator();					// Draws right-hand menu
+void drawTopAndBottomSeperator();						// Draws map seperator in right-hand menu
 	
 int main()
 {
@@ -59,8 +60,8 @@ int main()
 		FlipBuffers();
 		
 		ClearScreen8(SAND_COLOR);
-	
-		drawSidebar();
+
+		drawRightMenu();	
 	
 		moveCursor(cursorXLocation,cursorYLocation);
 		
@@ -69,25 +70,55 @@ int main()
 			cursorXLocation++;
 		*/
 		
-		//WaitVSync();
+		WaitVSync();
 	}
 
 	return 0;
 }
 
-void drawSidebar()
+// This draws the right menu
+// [TOOD: Spiral]
+void drawRightMenuSeperator()
 {
-	for(int line = 0;line<SCREEN_HEIGHT;line++)	// Traverse each line
+	for(int line = SIDEBAR_TOP;line<SIDEBAR_BOTTOM;line++)
 	{
-		// [TODO: Research a way to speed this up ]
-		for(int column = SIDEBAR_START;column<SCREEN_WIDTH;column++)
-		{
-			if((column<SIDEBAR_START+5)||((line>MAP_SEPERATOR) && (line<MAP_SEPERATOR+5)))
-				PlotPixel8(column,line,MENU_MAIN_COLOR);				
-			else
-				PlotPixel8(column,line,MENU_BCKGR_COLOR);
-		}	
+		for(int column=0;column<5;column++)
+			PlotPixel8(column+SIDEBAR_START,line,MENU_MAIN_COLOR);	//[TODO:Color should be team color
 	}
+
+}
+
+// This seperates the 'map'
+// [TODO: Spiral]
+void drawTopAndBottomSeperator()
+{
+	for(int line = 0; line<5;line++)
+	{
+		for(int column=SIDEBAR_START;column<SCREEN_WIDTH;column++)
+		{
+			PlotPixel8(column,line+SIDEBAR_BOTTOM,MENU_MAIN_COLOR);
+			PlotPixel8(column,SIDEBAR_TOP-line,MENU_MAIN_COLOR);
+		}
+	}
+}
+
+void drawMenuBackground()
+{
+	for(int line = SIDEBAR_TOP;line<SIDEBAR_BOTTOM;line++)
+	{
+		for(int column=SIDEBAR_START;column<SCREEN_WIDTH;column++)
+		{
+			PlotPixel8(column,line,MENU_BCKGR_COLOR);
+		}
+	}
+
+}
+
+void drawRightMenu()
+{
+	drawMenuBackground();
+	drawRightMenuSeperator();
+	drawTopAndBottomSeperator();
 }
 
 bool manageWallHit(int& x,int& y)
