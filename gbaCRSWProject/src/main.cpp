@@ -20,6 +20,8 @@ void paintGround();						// [TODO: Refer to exhibit a about painting sand textur
 void moveCursor(int&,int&);				// Move cursor at x,y with end-of-screen check
 void drawCursor(int,int);				// Draw cursor at x,y
 
+bool manageWallHit(int&,int&);			// Manages wall hits 
+
 int main()
 {
 	//REG_DISPCNT (defined in gba.h) is the main display register that controls
@@ -58,12 +60,42 @@ int main()
 	return 0;
 }
 
+bool manageWallHit(int& x,int& y)
+{
+	bool hasHitWall = false;
+	
+	if(x+2>SCREEN_WIDTH)
+	{
+		x-=2;
+		hasHitWall = true;
+	}
+	else if(x<2)
+	{
+		x+=2;
+		hasHitWall = true;
+	}
+	
+	if(y+2>SCREEN_HEIGHT)
+	{
+		y-=2;
+		hasHitWall = true;
+	}
+	else if(y<2)
+	{
+		y+=2;
+		hasHitWall = true;
+	}
+	
+	drawCursor(x,y);
+	return hasHitWall;
+}
+
 void moveCursor(int &_x,int &_y)
 {
 	// [TODO: Fix wall hit!
-	if(_x+2 >= SCREEN_WIDTH || _x<=2 || _y+2 >= SCREEN_HEIGHT || _y<=2)
-	{
-		drawCursor(_x,_y);	
+	
+	if(manageWallHit(_x,_y))
+	{	
 		return;
 	}
 		
