@@ -13,14 +13,20 @@ enum color
 {
 	SAND_COLOR = 0,
 	CURSOR_INNER_COLOR,
-	CURSOR_OUTER_COLOR
+	CURSOR_OUTER_COLOR,
+	MENU_MAIN_COLOR
 };
 
 void paintGround();						// [TODO: Refer to exhibit a about painting sand texture]
+
 void moveCursor(int&,int&);				// Move cursor at x,y with end-of-screen check
 void drawCursor(int,int);				// Draw cursor at x,y
+bool manageWallHit(int&,int&);			// Manages wall hits and returns true if a hit has been detected
 
-bool manageWallHit(int&,int&);			// Manages wall hits 
+void drawRightMenu();
+
+void drawRightMenuSeperator();					// Draws right-hand menu
+void drawMapSeperator();						// Draws map seperator in right-hand menu
 
 int main()
 {
@@ -34,6 +40,7 @@ int main()
 	SetPaletteBG(SAND_COLOR, RGB(26,17,9));		// Initialize base sand color (exhibit a)
 	SetPaletteBG(CURSOR_INNER_COLOR, RGB(31,31,31));
 	SetPaletteBG(CURSOR_OUTER_COLOR, RGB(0,0,0));
+	SetPaletteBG(MENU_MAIN_COLOR, RGB(5,9,22));
 		
 	drawCursor(10,10);
 	
@@ -47,6 +54,8 @@ int main()
 		
 		ClearScreen8(SAND_COLOR);
 	
+		drawRightMenu();
+	
 		moveCursor(cursorXLocation,cursorYLocation);
 		
 		/*
@@ -58,6 +67,35 @@ int main()
 	}
 
 	return 0;
+}
+
+// This draws the right menu
+// [TOOD: Spiral]
+void drawRightMenuSeperator()
+{
+	for(int line = 0;line<SCREEN_HEIGHT;line++)
+	{
+		for(int column=0;column<6;column++)
+			PlotPixel8(column+SCREEN_WIDTH*3/4,line,MENU_MAIN_COLOR);	//[TODO:Color should be team color]
+	}
+
+}
+
+// This seperates the 'map'
+// [TODO: Spiral]
+void drawMapSeperator()
+{
+	for(int line = 0; line<5;line++)
+	{
+		for(int column=SCREEN_WIDTH*3/4;column<SCREEN_WIDTH;column++)
+			PlotPixel8(column,line+SCREEN_HEIGHT*2/3,MENU_MAIN_COLOR);
+	}
+}
+
+void drawRightMenu()
+{
+	drawRightMenuSeperator();
+	drawMapSeperator();
 }
 
 bool manageWallHit(int& x,int& y)
@@ -92,12 +130,8 @@ bool manageWallHit(int& x,int& y)
 
 void moveCursor(int &_x,int &_y)
 {
-	// [TODO: Fix wall hit!
-	
 	if(manageWallHit(_x,_y))
-	{	
 		return;
-	}
 		
 	if((REG_P1 & KEY_RIGHT)==0)
 		_x++;	
