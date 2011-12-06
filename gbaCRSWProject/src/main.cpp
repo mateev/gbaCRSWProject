@@ -6,6 +6,7 @@
 
 #define SIDEBAR_WIDTH 60
 #define MAP_SEPERATOR 100
+#define SIDEBAR_START SCREEN_WIDTH-SIDEBAR_WIDTH
 
 //================
 //   Function: main()
@@ -78,17 +79,13 @@ void drawSidebar()
 {
 	for(int line = 0;line<SCREEN_HEIGHT;line++)	// Traverse each line
 	{
-		// [TODO: SCREEN_WDITH-SIDEBAR_WIDTH - eh? maybe #define this?
-		for(int column = SCREEN_WIDTH-SIDEBAR_WIDTH;column<SCREEN_WIDTH;column++)
+		// [TODO: Research a way to speed this up ]
+		for(int column = SIDEBAR_START;column<SCREEN_WIDTH;column++)
 		{
-			if((column<SCREEN_WIDTH-SIDEBAR_WIDTH+6)||((line>MAP_SEPERATOR) && (line<MAP_SEPERATOR+5)))
+			if((column<SIDEBAR_START+5)||((line>MAP_SEPERATOR) && (line<MAP_SEPERATOR+5)))
 				PlotPixel8(column,line,MENU_MAIN_COLOR);				
-		
-		/*
-			if((column<6) || (line>SCREEN_HEIGHT*2/3 && line<5+SCREEN_HEIGHT*2/3))
 			else
-				PlotPixel8(column+SCREEN_WIDTH*3/4,line,MENU_BCKGR_COLOR);
-		*/
+				PlotPixel8(column,line,MENU_BCKGR_COLOR);
 		}	
 	}
 }
