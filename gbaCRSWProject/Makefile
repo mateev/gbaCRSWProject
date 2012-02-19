@@ -167,5 +167,8 @@ $(OUTPUT).elf	:	$(OFILES)
 endif
 #---------------------------------------------------------------------------------
 
+#run: $(BUILD)
+#	vba $(OUTPUT).gba
+
 run: $(BUILD)
-	vba $(OUTPUT).gba
+	$(DEVKITPRO)/emuVBA/vba $(OUTPUT).gba
